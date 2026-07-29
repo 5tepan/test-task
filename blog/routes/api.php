@@ -9,6 +9,8 @@ Route::prefix('auth')->group(function () {
     Route::post('register', [AuthController::class, 'register']);
 });
 
+Route::get('posts', [PostController::class, 'index']);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('posts', [PostController::class, 'store']);
 });
