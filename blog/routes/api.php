@@ -13,4 +13,5 @@ Route::get('posts', [PostController::class, 'index']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('posts', [PostController::class, 'store']);
+    Route::get('posts/mine', [PostController::class, 'mine']);
 });
