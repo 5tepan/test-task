@@ -51,7 +51,14 @@ return [
         /*
          * Description rendered on the home page of the API documentation (`/docs/api`).
          */
-        'description' => 'JSON API for the Blog mobile app: auth, posts feed, and user posts.',
+        'description' => <<<'MD'
+JSON API for the Blog mobile app.
+
+**Auth:** `POST /auth/login` and `POST /auth/register` return `access_token`.
+Send it as `Authorization: Bearer {access_token}` on protected routes.
+
+**Posts:** public feed (`GET /posts`), create (`POST /posts`), and own posts (`GET /posts/mine`).
+MD,
     ],
 
     'ui' => [

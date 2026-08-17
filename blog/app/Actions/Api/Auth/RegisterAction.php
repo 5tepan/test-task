@@ -2,47 +2,25 @@
 
 namespace App\Actions\Api\Auth;
 
+use App\Http\Resources\AccessTokenResource;
 use App\Models\User;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpKernel\Exception\HttpException;
 
 class RegisterAction
 {
-    public function handle(Request $request): JsonResponse
+    /**
+     * @param  array{name: string, email: string, password: string}  $data
+     */
+    public function handle(array $data): AccessTokenResource
     {
-        $validator = Validator::make(
-            $request->all(),
-            [
-                'name' => ['required', 'string'],
-                'email' => ['required', 'email'],
-                'password' => ['required', 'string'],
-            ],
-        );
-
-        if ($validator->fails()) {
-            return response()->json(
-                [
-                    'message' => 'Validation error',
-                    'errors' => $validator->errors(),
-                ],
-                422,
-            );
-        }
-
-        $data = $validator->validated();
-
         $user = User::query()
             ->where('email', $data['email'])
             ->first();
 
         if ($user) {
             if (Hash::check($data['password'], $user->password)) {
-                return response()->json(
-                    ['message' => 'User already exists'],
-                    409,
-                );
+                throw new HttpException(409, 'User already exists');
             }
 
             $user->update([
@@ -57,10 +35,8 @@ class RegisterAction
             ]);
         }
 
-        $token = $user->createToken('api')->plainTextToken;
-
-        return response()->json([
-            'access_token' => $token,
-        ], 201);
+        return new AccessTokenResource([
+            'access_token' => $user->createToken('api')->plainTextToken,
+        ]);
     }
 }
